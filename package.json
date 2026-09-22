@@ -1,0 +1,13 @@
+{
+  "name": "aaa-rv-collision-service",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Static AAA RV website with optional local preview tools.",
+  "scripts": {
+    "dev": "vite",
+    "generate": "python3 scripts/build.py",
+    "check": "python3 scripts/check.py"
+  },
+  "devDependencies": { "vite": "8.3.0" }
+}
