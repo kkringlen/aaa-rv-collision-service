@@ -41,3 +41,7 @@ Prefix: https://aaarvcollisionandservice.com/wp-content/uploads/2018/03/
 ## Fonts
 
 Barlow and Barlow Condensed by Jeremy Tribby, distributed under the SIL Open Font License. Font files are locally hosted; both OFL notices are included in assets/fonts/. Sources: Google Fonts, https://github.com/google/fonts/tree/main/ofl/barlow and https://github.com/google/fonts/tree/main/ofl/barlowcondensed.
+
+## Homepage header image — September 23, 2026
+
+`assets/homepage-header.webp` is a web-optimized copy of the user-supplied `Headerimage.png` (1916 × 821). It replaces only the homepage hero and its preload. Other uses of the original `assets/hero.jpg` remain in place. Responsive image positioning keeps the motorhome visible on narrow screens.
