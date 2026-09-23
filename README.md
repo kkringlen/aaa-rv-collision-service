@@ -52,7 +52,7 @@ Optional live preview: `npm ci` then `npm run dev`. Vite is a development-only d
 
 ## Customer actions
 
-Calls link to `tel:+14056341429`. Google Maps opens the shop's address. The Contact page retains a secondary link to the existing Shopmonkey request page; the new website does not collect or submit customer data. The external Shopmonkey experience remains controlled by Shopmonkey and should be checked separately for its wording and availability.
+Calls link to `tel:+14056341429`. Google Maps opens the shop's address. The Contact page embeds the shop’s Shopmonkey work order request form, with a direct-link fallback. Submissions go directly to Shopmonkey. The form’s `sm_wrf` analytics events are forwarded to `window.dataLayer` only when they come from the embedded form at `https://app.shopmonkey.cloud`.
 
 ## Policy and content
 

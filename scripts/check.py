@@ -17,7 +17,7 @@ class Page(HTMLParser):
             href=a.get('href',a.get('src'))
             if href:self.links.append(href)
 
-pages={p:Page(p.read_text()) for p in ROOT.rglob('*.html') if 'node_modules' not in p.parts}
+pages={p:Page(p.read_text()) for p in ROOT.rglob('*.html') if not {'node_modules', 'wordpress'}.intersection(p.relative_to(ROOT).parts)}
 errors=[];count=0
 for p,doc in pages.items():
     raw=p.read_text(); rel=str(p.relative_to(ROOT))
