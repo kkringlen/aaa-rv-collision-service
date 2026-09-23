@@ -15,7 +15,7 @@ Reviewed September 22, 2026. User-directed redesign of AAA RV's own website.
 | https://aaarvcollisionandservice.com/links/ | Condensed resources retaining RV Education 101 and RV Trader, plus relevant internal guidance. |
 | Supplied logo.png | Original updated logo copied unchanged to assets/aaa-rv-logo.png. CSS clips the white corners for display; original image bytes preserved. |
 
-The user's current instruction overrides legacy “free quote” copy: damage estimates are not free; free quotes apply only to service and maintenance. No specific damage estimate price is published.
+The user clarified the estimate policy on September 23, 2026: there is no estimate charge when AAA RV completes the repairs in the approved estimate. An estimate fee applies if AAA RV prepares an estimate and the customer chooses not to have those approved repairs completed at AAA RV. Service and maintenance quotes remain free. The homepage top estimate banner is removed. No specific estimate price is published.
 
 ## Photographs
 

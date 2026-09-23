@@ -56,8 +56,9 @@ Calls link to `tel:+14056341429`. Google Maps opens the shop's address. The Cont
 
 ## Policy and content
 
-- Damage estimates are not free, stated prominently on every page.
-- Free quotes are for service and maintenance only.
+- No estimate charge when AAA RV completes the repairs in the approved estimate. An estimate fee applies if AAA RV prepares an estimate and the customer chooses not to have those approved repairs completed at AAA RV.
+- The homepage has no top estimate banner; the benefit and conditions appear in the lower estimate section. Other pages use a positive benefit banner.
+- Free quotes are available for service and maintenance.
 - Diagnostic labor may apply when troubleshooting is required.
 - Exact fee amounts were intentionally not added, as directed.
 - Published contact details: 10519 S. Sunnylane, Oklahoma City, OK 73160; (405) 634-1429; Monday–Friday 8 AM–5 PM.

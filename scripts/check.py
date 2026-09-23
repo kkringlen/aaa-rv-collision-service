@@ -24,7 +24,7 @@ for p,doc in pages.items():
     if doc.h1!=1:errors.append(f'{rel}: expected one h1, got {doc.h1}')
     if len(doc.ids)!=len(set(doc.ids)):errors.append(f'{rel}: duplicate IDs')
     if '{{R}}' in raw:errors.append(f'{rel}: unresolved prefix')
-    if 'Damage estimates are not free.' not in raw:errors.append(f'{rel}: missing estimate policy')
+    if 'contact/#estimate-policy' not in raw:errors.append(f'{rel}: missing estimate policy link')
     if '<meta name="description"' not in raw:errors.append(f'{rel}: missing description')
     for payload in re.findall(r'<script type="application/ld\+json">(.*?)</script>',raw):json.loads(payload)
     for im in doc.images:
