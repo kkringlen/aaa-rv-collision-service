@@ -8,5 +8,5 @@
 </head>
 <body <?php body_class(); ?>>
 <?php wp_body_open(); aaa_rv_part('header');
-if (!is_front_page()) { aaa_rv_part('policy'); } ?>
+if (!is_front_page() && !is_page('request-service')) { aaa_rv_part('policy'); } ?>
 <main id="main">

@@ -32,6 +32,10 @@ function aaa_rv_part($name) {
     $html = aaa_rv_resolve(file_get_contents(get_template_directory() . '/parts/' . $name . '.html'));
     if ($name === 'header') {
         $key = aaa_rv_key();
+        if ($key === 'request-service') {
+            $html = str_replace(array('class="topbar-request"', 'class="nav-request"'),
+                array('class="topbar-request" aria-current="page"', 'class="nav-request" aria-current="page"'), $html);
+        }
         if (in_array($key, array('claim-help','gallery','about','contact'), true)) {
             $needle = '<a href="' . esc_url(home_url('/' . $key . '/')) . '">';
             $html = str_replace($needle, '<a aria-current="page" href="' . esc_url(home_url('/' . $key . '/')) . '">', $html);
@@ -50,12 +54,13 @@ add_action('after_setup_theme', function () {
 add_action('wp_enqueue_scripts', function () {
     $uri = get_template_directory_uri();
     wp_enqueue_style('aaa-rv-fonts', $uri . '/assets/fonts.css', array(), '1.0.0');
-    wp_enqueue_style('aaa-rv-design', $uri . '/styles.css', array('aaa-rv-fonts'), '1.0.0');
-    wp_enqueue_script('aaa-rv-site', $uri . '/site.js', array(), '1.0.0', true);
+    wp_enqueue_style('aaa-rv-design', $uri . '/styles.css', array('aaa-rv-fonts'), '1.1.0');
+    wp_enqueue_script('aaa-rv-site', $uri . '/site.js', array(), '1.1.0', true);
 });
 
 add_shortcode('aaa_rv_work_request', function () {
-    return '<iframe id="shopmonkey-work-request" title="AAA RV work order request form" src="https://app.shopmonkey.cloud/public/quote-request/60ee077ed870723088e7a9a2" width="100%" height="700" frameborder="0" loading="lazy"></iframe>';
+    $loading = is_page('request-service') ? 'eager' : 'lazy';
+    return '<iframe id="shopmonkey-work-request" title="AAA RV work order request form" src="https://app.shopmonkey.cloud/public/quote-request/60ee077ed870723088e7a9a2" width="100%" height="700" frameborder="0" loading="' . $loading . '"></iframe>';
 });
 
 function aaa_rv_seo_value($field, $fallback) {
@@ -97,7 +102,7 @@ function aaa_rv_activate() {
     if (get_option('aaa_rv_redesign_import_v1')) { return; }
     if (!current_user_can('switch_themes') || !current_user_can('unfiltered_html')) { return; }
     $data = aaa_rv_content();
-    if (count($data) !== 16) {
+    if (count($data) !== 17) {
         update_option('aaa_rv_redesign_import_error', 'The bundled page content could not be validated.', false);
         return;
     }
@@ -146,6 +151,57 @@ function aaa_rv_activate() {
 }
 add_action('after_switch_theme', 'aaa_rv_activate');
 add_action('admin_init', 'aaa_rv_activate');
+
+/** Add the request page on a theme update without re-importing existing pages. */
+function aaa_rv_update_request_page() {
+    if (get_option('aaa_rv_request_page_v110')) { return; }
+    if (!get_option('aaa_rv_redesign_import_v1') || !current_user_can('switch_themes') || !current_user_can('unfiltered_html')) { return; }
+    $data = aaa_rv_content();
+    if (empty($data['request-service'])) { return; }
+    $existing = get_page_by_path('request-service', OBJECT, 'page');
+    if ($existing && get_post_meta($existing->ID, '_aaa_rv_redesigned', true) !== '1') {
+        update_option('aaa_rv_redesign_import_error', 'A Request Service page already exists. Review it before replacing its content.', false);
+        return;
+    }
+    if (!$existing) {
+        $item = $data['request-service'];
+        $id = wp_insert_post(wp_slash(array('post_type'=>'page', 'post_status'=>'publish',
+            'post_name'=>'request-service', 'post_title'=>$item['title'],
+            'post_content'=>'<!-- wp:html -->' . aaa_rv_resolve($item['content']) . '<!-- /wp:html -->',
+            'post_excerpt'=>$item['description'], 'comment_status'=>'closed', 'ping_status'=>'closed')), true);
+        if (is_wp_error($id)) {
+            update_option('aaa_rv_redesign_import_error', $id->get_error_message(), false);
+            return;
+        }
+        update_post_meta($id, '_aaa_rv_redesigned', '1');
+        update_post_meta($id, '_wp_page_template', 'default');
+        update_post_meta($id, '_yoast_wpseo_title', $item['seo_title']);
+        update_post_meta($id, '_yoast_wpseo_metadesc', $item['description']);
+    } else { $id = $existing->ID; }
+    $ids = get_option('aaa_rv_redesign_page_ids', array());
+    $ids['request-service'] = $id;
+    update_option('aaa_rv_redesign_page_ids', $ids, false);
+    $contact = get_page_by_path('contact', OBJECT, 'page');
+    if ($contact && get_post_meta($contact->ID, '_aaa_rv_redesigned', true) === '1') {
+        $content = str_replace(
+            array('Use the work order request form below to tell us about your RV and the work you need.', 'href="#work-order-request">Request service online'),
+            array('Tell us about your RV and the work you need on our dedicated service request page, or use the form below.', 'href="' . esc_url(home_url('/request-service/')) . '">Request service online'),
+            $contact->post_content);
+        if ($content !== $contact->post_content) {
+            add_post_meta($contact->ID, '_aaa_rv_before_request_v110', $contact->post_content, true);
+            wp_save_post_revision($contact->ID);
+            $updated = wp_update_post(wp_slash(array('ID'=>$contact->ID, 'post_content'=>$content)), true);
+            if (is_wp_error($updated)) {
+                update_option('aaa_rv_redesign_import_error', $updated->get_error_message(), false);
+                return;
+            }
+        }
+    }
+    update_option('aaa_rv_request_page_v110', current_time('mysql'), false);
+    delete_option('aaa_rv_redesign_import_error');
+    flush_rewrite_rules(false);
+}
+add_action('admin_init', 'aaa_rv_update_request_page', 20);
 
 add_action('admin_notices', function () {
     $error = get_option('aaa_rv_redesign_import_error');

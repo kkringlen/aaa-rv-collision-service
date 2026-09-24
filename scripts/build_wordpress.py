@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 THEME = ROOT / 'wordpress' / 'aaa-rv-redesign'
 THEME.mkdir(parents=True, exist_ok=True)
 (THEME / 'parts').mkdir(exist_ok=True)
-TITLES = {'home':'Home','rv-services':'RV Services','claim-help':'Claim Help','contact':'Contact',
+TITLES = {'request-service':'Request Service','home':'Home','rv-services':'RV Services','claim-help':'Claim Help','contact':'Contact',
           'about':'About','gallery':'Our Work','join-our-team':'Join Our Team','links':'RV Resources'}
 
 def portable(markup):
