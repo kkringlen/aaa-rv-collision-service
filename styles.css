@@ -26,3 +26,6 @@ h1,h2,h3{overflow-wrap:break-word}@media(max-width:1000px){.js .header-inner nav
 .service-card[data-service="paint-and-graphics"]>img{object-position:50% 47%}
 .service-card[data-service="trailer-chassis"]>img{object-position:50% 72%}
 .service-card[data-service="appliances-and-systems"]>img{object-fit:contain;background:#252525}
+
+/* Retain the entire coach at desktop and mobile widths. */
+.service-photo img.collision-coach-photo{height:auto;min-height:0;max-height:none;aspect-ratio:4/3;object-fit:contain}

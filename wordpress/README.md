@@ -29,3 +29,9 @@ The homepage and RV Services page use five owner-supplied category photos. The c
 The grids now render through `[aaa_rv_service_grid view="home"]` and `[aaa_rv_service_grid view="rv-services"]`. Keep these shortcodes intact in the WordPress editor. Card headings, descriptions, links, and images are maintained in `scripts/build.py` and exported to the theme's `parts/service-grid-*.html` files. This prevents the visual editor from separating photo links from their descriptions.
 
 The administrator-only update replaces only each existing grid. It retains the rest of the current page, preserves IDs, saves the exact prior content in `_aaa_rv_before_grid_v120` and a WordPress revision, and runs once. Unexpected grid markup is retained with an admin notice for review. Version 1.2.0 passed an isolated upgrade from 1.1.0 on WordPress 7.1.2 / PHP 7.4.33, including the broken classic-editor layout, homepage Custom HTML block, retained owner edits, image/URL rendering, and repeat-update behavior.
+
+## Version 1.2.1 — Collision page photo
+
+Replaces only the `/collision-repair/` hero image with the owner's September 2026 Allegro photo, with a tidied background and gravel. The dedicated image class displays the entire coach at all existing breakpoints. Category cards and the before/after gallery retain their own images.
+
+The update preserves the current collision-page content except for its hero image tag, keeps a WordPress revision and `_aaa_rv_before_collision_photo_v121` recovery copy, and runs once. If the expected photo structure is missing, it retains the page and displays an admin notice. Future image updates should retain the original vehicle appearance and tidy only the surroundings unless the owner requests other edits.

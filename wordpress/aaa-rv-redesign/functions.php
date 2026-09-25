@@ -54,8 +54,8 @@ add_action('after_setup_theme', function () {
 add_action('wp_enqueue_scripts', function () {
     $uri = get_template_directory_uri();
     wp_enqueue_style('aaa-rv-fonts', $uri . '/assets/fonts.css', array(), '1.0.0');
-    wp_enqueue_style('aaa-rv-design', $uri . '/styles.css', array('aaa-rv-fonts'), '1.2.0');
-    wp_enqueue_script('aaa-rv-site', $uri . '/site.js', array(), '1.2.0', true);
+    wp_enqueue_style('aaa-rv-design', $uri . '/styles.css', array('aaa-rv-fonts'), '1.2.1');
+    wp_enqueue_script('aaa-rv-site', $uri . '/site.js', array(), '1.2.1', true);
 });
 
 add_shortcode('aaa_rv_service_grid', function ($attributes) {
@@ -260,10 +260,43 @@ function aaa_rv_update_service_grids() {
 }
 add_action('admin_init', 'aaa_rv_update_service_grids', 30);
 
+/** Replace only the collision page's hero image, retaining all other owner edits. */
+function aaa_rv_update_collision_photo() {
+    if (get_option('aaa_rv_collision_photo_v121')) { return; }
+    if (!get_option('aaa_rv_redesign_import_v1') || !current_user_can('switch_themes') || !current_user_can('unfiltered_html')) { return; }
+    $page = get_page_by_path('collision-repair', OBJECT, 'page');
+    $data = aaa_rv_content();
+    $pattern = '~(<figure\b[^>]*class="[^"]*\bservice-photo\b[^"]*"[^>]*>\s*)(<img\b[^>]*>)~i';
+    if (!$page || get_post_meta($page->ID, '_aaa_rv_redesigned', true) !== '1' ||
+        !preg_match($pattern, $data['collision-repair']['content'], $replacement) ||
+        !preg_match($pattern, $page->post_content, $existing)) {
+        update_option('aaa_rv_collision_photo_error', 'The collision page image needs manual review. Existing content has been retained.', false);
+        return;
+    }
+    $image = aaa_rv_resolve($replacement[2]);
+    $content = preg_replace_callback($pattern, function ($match) use ($image) { return $match[1] . $image; }, $page->post_content, 1);
+    if ($content !== $page->post_content) {
+        add_post_meta($page->ID, '_aaa_rv_before_collision_photo_v121', $page->post_content, true);
+        wp_save_post_revision($page->ID);
+        $result = wp_update_post(wp_slash(array('ID'=>$page->ID, 'post_content'=>$content)), true);
+        if (is_wp_error($result)) {
+            update_option('aaa_rv_collision_photo_error', $result->get_error_message(), false);
+            return;
+        }
+    }
+    update_option('aaa_rv_collision_photo_v121', current_time('mysql'), false);
+    delete_option('aaa_rv_collision_photo_error');
+}
+add_action('admin_init', 'aaa_rv_update_collision_photo', 40);
+
 add_action('admin_notices', function () {
     $error = get_option('aaa_rv_redesign_import_error');
     if ($error && current_user_can('switch_themes')) {
         echo '<div class="notice notice-error"><p>AAA RV page setup needs attention: ' . esc_html($error) . '</p></div>';
+    }
+    $photo_error = get_option('aaa_rv_collision_photo_error');
+    if ($photo_error && current_user_can('switch_themes')) {
+        echo '<div class="notice notice-error"><p>AAA RV photo update: ' . esc_html($photo_error) . '</p></div>';
     }
 });
 
