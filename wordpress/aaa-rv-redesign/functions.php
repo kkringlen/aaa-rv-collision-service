@@ -54,8 +54,8 @@ add_action('after_setup_theme', function () {
 add_action('wp_enqueue_scripts', function () {
     $uri = get_template_directory_uri();
     wp_enqueue_style('aaa-rv-fonts', $uri . '/assets/fonts.css', array(), '1.0.0');
-    wp_enqueue_style('aaa-rv-design', $uri . '/styles.css', array('aaa-rv-fonts'), '1.2.1');
-    wp_enqueue_script('aaa-rv-site', $uri . '/site.js', array(), '1.2.1', true);
+    wp_enqueue_style('aaa-rv-design', $uri . '/styles.css', array('aaa-rv-fonts'), '1.2.2');
+    wp_enqueue_script('aaa-rv-site', $uri . '/site.js', array(), '1.2.2', true);
 });
 
 add_shortcode('aaa_rv_service_grid', function ($attributes) {
@@ -289,6 +289,40 @@ function aaa_rv_update_collision_photo() {
 }
 add_action('admin_init', 'aaa_rv_update_collision_photo', 40);
 
+/** Replace the trailer service illustration with the supplied shop photograph. */
+function aaa_rv_update_trailer_photo() {
+    if (get_option('aaa_rv_trailer_photo_v122')) { return; }
+    if (!get_option('aaa_rv_redesign_import_v1') || !current_user_can('switch_themes') || !current_user_can('unfiltered_html')) { return; }
+    $page = get_page_by_path('trailer-chassis', OBJECT, 'page');
+    $data = aaa_rv_content();
+    $photo_pattern = '~<figure\b[^>]*class="[^"]*\bservice-photo\b[^"]*"[^>]*>.*?</figure>~is';
+    $placeholder_pattern = '~<div\b[^>]*class="[^"]*\bservice-type-art\b[^"]*"[^>]*>.*?</div>~is';
+    if (!$page || get_post_meta($page->ID, '_aaa_rv_redesigned', true) !== '1' ||
+        !preg_match($photo_pattern, $data['trailer-chassis']['content'], $replacement)) {
+        update_option('aaa_rv_trailer_photo_error', 'The Trailer Chassis photo needs manual review. Existing content has been retained.', false);
+        return;
+    }
+    $pattern = preg_match($placeholder_pattern, $page->post_content) ? $placeholder_pattern : $photo_pattern;
+    if (!preg_match($pattern, $page->post_content)) {
+        update_option('aaa_rv_trailer_photo_error', 'The Trailer Chassis image location could not be identified. Existing content has been retained.', false);
+        return;
+    }
+    $photo = aaa_rv_resolve($replacement[0]);
+    $content = preg_replace_callback($pattern, function () use ($photo) { return $photo; }, $page->post_content, 1);
+    if ($content !== $page->post_content) {
+        add_post_meta($page->ID, '_aaa_rv_before_trailer_photo_v122', $page->post_content, true);
+        wp_save_post_revision($page->ID);
+        $result = wp_update_post(wp_slash(array('ID'=>$page->ID, 'post_content'=>$content)), true);
+        if (is_wp_error($result)) {
+            update_option('aaa_rv_trailer_photo_error', $result->get_error_message(), false);
+            return;
+        }
+    }
+    update_option('aaa_rv_trailer_photo_v122', current_time('mysql'), false);
+    delete_option('aaa_rv_trailer_photo_error');
+}
+add_action('admin_init', 'aaa_rv_update_trailer_photo', 50);
+
 add_action('admin_notices', function () {
     $error = get_option('aaa_rv_redesign_import_error');
     if ($error && current_user_can('switch_themes')) {
@@ -297,6 +331,10 @@ add_action('admin_notices', function () {
     $photo_error = get_option('aaa_rv_collision_photo_error');
     if ($photo_error && current_user_can('switch_themes')) {
         echo '<div class="notice notice-error"><p>AAA RV photo update: ' . esc_html($photo_error) . '</p></div>';
+    }
+    $trailer_error = get_option('aaa_rv_trailer_photo_error');
+    if ($trailer_error && current_user_can('switch_themes')) {
+        echo '<div class="notice notice-error"><p>AAA RV photo update: ' . esc_html($trailer_error) . '</p></div>';
     }
 });
 

@@ -35,3 +35,9 @@ The administrator-only update replaces only each existing grid. It retains the r
 Replaces only the `/collision-repair/` hero image with the owner's September 2026 Allegro photo, with a tidied background and gravel. The dedicated image class displays the entire coach at all existing breakpoints. Category cards and the before/after gallery retain their own images.
 
 The update preserves the current collision-page content except for its hero image tag, keeps a WordPress revision and `_aaa_rv_before_collision_photo_v121` recovery copy, and runs once. If the expected photo structure is missing, it retains the page and displays an admin notice. Future image updates should retain the original vehicle appearance and tidy only the surroundings unless the owner requests other edits.
+
+## Version 1.2.2 — Trailer Chassis page photo
+
+Replaces the `/trailer-chassis/` title illustration with the same owner-supplied photo used for its category card (`assets/service-trailer-chassis.webp`). The attachment was confirmed identical to the previously supplied original. No generative edits were applied. The hero retains the full photograph at its native 3:2 proportion across screen sizes.
+
+The one-time update replaces only that visual, preserves the rest of the page, and stores the prior content in `_aaa_rv_before_trailer_photo_v122` and a WordPress revision. It retains the earlier photo updates and does not re-import other page content.

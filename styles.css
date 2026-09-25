@@ -29,3 +29,6 @@ h1,h2,h3{overflow-wrap:break-word}@media(max-width:1000px){.js .header-inner nav
 
 /* Retain the entire coach at desktop and mobile widths. */
 .service-photo img.collision-coach-photo{height:auto;min-height:0;max-height:none;aspect-ratio:4/3;object-fit:contain}
+
+/* Preserve the complete trailer brakes and suspension photograph. */
+.service-photo img.trailer-chassis-photo{height:auto;min-height:0;max-height:none;aspect-ratio:3/2;object-fit:contain}
