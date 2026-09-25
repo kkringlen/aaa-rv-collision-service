@@ -54,8 +54,14 @@ add_action('after_setup_theme', function () {
 add_action('wp_enqueue_scripts', function () {
     $uri = get_template_directory_uri();
     wp_enqueue_style('aaa-rv-fonts', $uri . '/assets/fonts.css', array(), '1.0.0');
-    wp_enqueue_style('aaa-rv-design', $uri . '/styles.css', array('aaa-rv-fonts'), '1.1.0');
-    wp_enqueue_script('aaa-rv-site', $uri . '/site.js', array(), '1.1.0', true);
+    wp_enqueue_style('aaa-rv-design', $uri . '/styles.css', array('aaa-rv-fonts'), '1.2.0');
+    wp_enqueue_script('aaa-rv-site', $uri . '/site.js', array(), '1.2.0', true);
+});
+
+add_shortcode('aaa_rv_service_grid', function ($attributes) {
+    $attributes = shortcode_atts(array('view'=>'rv-services'), $attributes, 'aaa_rv_service_grid');
+    $view = $attributes['view'] === 'home' ? 'home' : 'rv-services';
+    return aaa_rv_resolve(file_get_contents(get_template_directory() . '/parts/service-grid-' . $view . '.html'));
 });
 
 add_shortcode('aaa_rv_work_request', function () {
@@ -202,6 +208,57 @@ function aaa_rv_update_request_page() {
     flush_rewrite_rules(false);
 }
 add_action('admin_init', 'aaa_rv_update_request_page', 20);
+
+/** Locate only the category grid; never re-import the rest of an edited page. */
+function aaa_rv_replace_service_grid($content, $view) {
+    $shortcode = '[aaa_rv_service_grid view="' . $view . '"]';
+    if (strpos($content, $shortcode) !== false) { return $content; }
+    if (!preg_match('/<div\b[^>]*\bclass\s*=\s*([\x22\x27])[^\x22\x27]*\bservice-grid\b[^\x22\x27]*\1[^>]*>/i', $content, $start, PREG_OFFSET_CAPTURE)) { return false; }
+    $offset = $start[0][1];
+    preg_match_all('/<\/?div\b[^>]*>/i', substr($content, $offset), $tags, PREG_OFFSET_CAPTURE);
+    $depth = 0;
+    foreach ($tags[0] as $tag) {
+        $depth += substr($tag[0], 0, 2) === '</' ? -1 : 1;
+        if ($depth === 0) {
+            $end = $offset + $tag[1] + strlen($tag[0]);
+            return substr($content, 0, $offset) . $shortcode . substr($content, $end);
+        }
+    }
+    return false;
+}
+
+/** Repair the two existing grids once, with revisions and an exact recovery copy. */
+function aaa_rv_update_service_grids() {
+    if (get_option('aaa_rv_service_grids_v120')) { return; }
+    if (!get_option('aaa_rv_redesign_import_v1') || !current_user_can('switch_themes') || !current_user_can('unfiltered_html')) { return; }
+    $pages = array('home'=>get_post((int)get_option('page_on_front')), 'rv-services'=>get_page_by_path('rv-services', OBJECT, 'page'));
+    $updates = array();
+    foreach ($pages as $view=>$page) {
+        if (!$page || $page->post_type !== 'page' || get_post_meta($page->ID, '_aaa_rv_redesigned', true) !== '1') {
+            update_option('aaa_rv_redesign_import_error', 'The service grid update could not identify the existing pages. No grid content was replaced.', false);
+            return;
+        }
+        $content = aaa_rv_replace_service_grid($page->post_content, $view);
+        if ($content === false) {
+            update_option('aaa_rv_redesign_import_error', 'A service grid needs manual review. Existing page content has been retained.', false);
+            return;
+        }
+        $updates[$view] = $content;
+    }
+    foreach ($pages as $view=>$page) {
+        if ($updates[$view] === $page->post_content) { continue; }
+        add_post_meta($page->ID, '_aaa_rv_before_grid_v120', $page->post_content, true);
+        wp_save_post_revision($page->ID);
+        $result = wp_update_post(wp_slash(array('ID'=>$page->ID, 'post_content'=>$updates[$view])), true);
+        if (is_wp_error($result)) {
+            update_option('aaa_rv_redesign_import_error', $result->get_error_message(), false);
+            return;
+        }
+    }
+    update_option('aaa_rv_service_grids_v120', current_time('mysql'), false);
+    delete_option('aaa_rv_redesign_import_error');
+}
+add_action('admin_init', 'aaa_rv_update_service_grids', 30);
 
 add_action('admin_notices', function () {
     $error = get_option('aaa_rv_redesign_import_error');

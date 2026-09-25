@@ -28,6 +28,17 @@ for path in sources:
     raw = path.read_text()
     body = portable(re.search(r'<main id="main">(.*?)</main>', raw, re.S).group(1))
     body = re.sub(r'<iframe id="shopmonkey-work-request".*?</iframe>', '[aaa_rv_work_request]', body, flags=re.S)
+    if key in ('home', 'rv-services'):
+        # Keep the complete cards out of the visual editor, which splits block-level links.
+        start = body.index('<div class="service-grid">')
+        depth = 0
+        for tag in re.finditer(r'</?div\b[^>]*>', body[start:]):
+            depth += -1 if tag.group().startswith('</') else 1
+            if depth == 0:
+                end = start + tag.end()
+                break
+        (THEME/'parts'/f'service-grid-{key}.html').write_text(body[start:end])
+        body = body[:start] + f'[aaa_rv_service_grid view="{key}"]' + body[end:]
     title = unescape(re.search(r'<title>(.*?)</title>', raw).group(1))
     desc = unescape(re.search(r'<meta name="description" content="([^"]*)"', raw).group(1))
     pages[key] = {'title':TITLES.get(key, title.split(' | ')[0]), 'seo_title':title, 'description':desc, 'content':body}

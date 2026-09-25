@@ -21,3 +21,8 @@ h1,h2,h3{overflow-wrap:break-word}@media(max-width:1000px){.js .header-inner nav
 @media(max-width:1000px){.header-contact{margin-left:auto}.header-inner nav>.nav-request{display:flex;align-items:center;gap:9px;color:var(--gold-light)}.request-page-heading{gap:28px}.request-help{padding-left:22px}}
 @media(max-width:700px){.topbar-actions{display:none}.header-contact{display:none}.callout-actions{align-items:flex-start}.mobile-actions{display:grid;grid-template-columns:1fr 1fr 1.6fr;position:fixed;inset:auto 0 0;z-index:35;background:var(--ink);color:#fff;border-top:1px solid var(--gold-dark);box-shadow:0 -4px 20px #0002;padding-bottom:env(safe-area-inset-bottom)}.mobile-actions a{display:flex;justify-content:center;align-items:center;gap:8px;min-height:60px;padding:12px 8px;font-size:.88rem;font-weight:600;border-right:1px solid #ffffff25}.mobile-actions svg{width:18px;height:18px}.mobile-actions .mobile-request{background:var(--gold);color:var(--ink);border:0}.request-page{padding:24px 0 48px}.request-page .breadcrumb{margin-bottom:24px}.request-page-heading{display:block;margin-bottom:24px}.request-page h1{font-size:3rem}.request-help{display:none}.request-page .request-intro{font-size:1rem}.request-page-notes{font-size:.9rem}.request-form-wrap{margin-inline:-12px}.work-request-section iframe{height:700px}}
 @media print{.mobile-actions,.request-help{display:none!important}}
+
+/* Category photos: keep the repair work visible and all appliance silhouettes intact. */
+.service-card[data-service="paint-and-graphics"]>img{object-position:50% 47%}
+.service-card[data-service="trailer-chassis"]>img{object-position:50% 72%}
+.service-card[data-service="appliances-and-systems"]>img{object-fit:contain;background:#252525}

@@ -21,3 +21,11 @@ The compact header Text us link uses `sms:+14056341429`, alongside the shop's ex
 Request Service is a regular published WordPress page at `/request-service/`, reachable from the utility bar, mobile menu/action bar, and footer. It embeds the existing Shopmonkey form with immediate loading and a direct-form fallback. The Contact page keeps its form and existing anchors and links to the new page.
 
 Uploading version 1.1.0 over the active theme creates only the new page through an administrator-only, one-time update. It preserves existing page IDs and owner edits, changes only the known Contact introduction/link, and saves a recovery copy and revision for that edit. Repeated updates do not overwrite later page edits. No additional WordPress plan or page allowance is needed on this self-hosted installation.
+
+## Version 1.2.0 — Category photos and grid repair
+
+The homepage and RV Services page use five owner-supplied category photos. The collision photo has its identifying tag blended out; the appliances image has been recomposed against charcoal. Roofs & Water Damage and Interior Restoration retain their existing images. Individual service-page hero images remain independent of the category images.
+
+The grids now render through `[aaa_rv_service_grid view="home"]` and `[aaa_rv_service_grid view="rv-services"]`. Keep these shortcodes intact in the WordPress editor. Card headings, descriptions, links, and images are maintained in `scripts/build.py` and exported to the theme's `parts/service-grid-*.html` files. This prevents the visual editor from separating photo links from their descriptions.
+
+The administrator-only update replaces only each existing grid. It retains the rest of the current page, preserves IDs, saves the exact prior content in `_aaa_rv_before_grid_v120` and a WordPress revision, and runs once. Unexpected grid markup is retained with an admin notice for review. Version 1.2.0 passed an isolated upgrade from 1.1.0 on WordPress 7.1.2 / PHP 7.4.33, including the broken classic-editor layout, homepage Custom HTML block, retained owner edits, image/URL rendering, and repeat-update behavior.

@@ -74,8 +74,21 @@ def page(slug,title,desc,body,active='',preload=False):
 def heading(kicker,title,desc='',cls=''):
     return f'<div class="section-heading {cls}"><div><p class="eyebrow">{kicker}</p><h2>{title}</h2></div>{"<p>"+desc+"</p>" if desc else ""}</div>'
 
+CARD_PHOTOS = {
+    'collision-repair': ('service-collision.webp', 'Rear fiberglass and body damage on a motorhome awaiting collision repair', 1200, 900),
+    'paint-and-graphics': ('service-paint.webp', 'Motorhome masked and prepared for paint in the AAA RV spray booth', 900, 1200),
+    'service-and-maintenance': ('service-maintenance.webp', 'Technician applying sealant during RV roof maintenance', 1200, 900),
+    'appliances-and-systems': ('service-appliances.webp', 'RV refrigerator, air conditioner, furnace, water heater, range, and ice maker', 1200, 900),
+    'trailer-chassis': ('service-trailer-chassis.webp', 'Exposed trailer brakes and suspension during chassis service', 1200, 800),
+}
+
 def cards(items):
-    return '<div class="service-grid">'+''.join(f'''<a class="service-card {'no-photo' if not s['image'] else ''}" href="{{{{R}}}}{s['slug']}/">{f'<img src="{{{{R}}}}assets/{s["image"]}" alt="{s["alt"]}" width="600" height="400" loading="lazy">' if s['image'] else '<div class="type-panel"><span>AAA RV</span><b>'+e(s['short'])+'</b></div>'}<div class="service-card-copy"><span class="card-number">0{SERVICES.index(s)+1}</span><h3>{e(s['short'])}</h3><p>{e(s['desc'])}</p><span class="card-link">Explore service {icon('arrow')}</span></div></a>''' for s in items)+'</div>'
+    result = []
+    for s in items:
+        photo, alt, width, height = CARD_PHOTOS.get(s['slug'], (s['image'], s['alt'], 600, 400))
+        visual = f'<img src="{{{{R}}}}assets/{photo}" alt="{e(alt, quote=True)}" width="{width}" height="{height}" loading="lazy">'
+        result.append(f'''<a class="service-card" data-service="{s['slug']}" href="{{{{R}}}}{s['slug']}/">{visual}<div class="service-card-copy"><span class="card-number">0{SERVICES.index(s)+1}</span><h3>{e(s['short'])}</h3><p>{e(s['desc'])}</p><span class="card-link">Explore service {icon('arrow')}</span></div></a>''')
+    return '<div class="service-grid">'+''.join(result)+'</div>'
 
 def intro(kicker,title,desc):
     return f'<section class="page-intro"><div class="container"><p class="breadcrumb"><a href="{{{{R}}}}">Home</a> / {kicker}</p><p class="eyebrow">{kicker}</p><h1>{title}</h1><p class="lede">{desc}</p></div></section>'
