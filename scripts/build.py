@@ -1,9 +1,10 @@
 """Generate the portable, build-free GitHub Pages website. Python 3, no dependencies."""
 from pathlib import Path
 from html import escape as e
-import json
+import json, hashlib
 
 ROOT = Path(__file__).resolve().parents[1]
+STYLE_VERSION = hashlib.sha256((ROOT/'styles.css').read_bytes()).hexdigest()[:10]
 BASE = 'https://kkringlen.github.io/aaa-rv-collision-service'
 PHONE = 'tel:+14056341429'
 TEXT = 'sms:+14056341429'
@@ -66,7 +67,7 @@ def page(slug,title,desc,body,active='',preload=False):
     url=BASE+'/'+(slug+'/' if slug else '')
     structured={'@context':'https://schema.org','@type':'AutomotiveBusiness','name':'AAA RV Collision & Service Center','url':BASE+'/','telephone':'+1-405-634-1429','address':{'@type':'PostalAddress','streetAddress':'10519 S. Sunnylane','addressLocality':'Oklahoma City','addressRegion':'OK','postalCode':'73160','addressCountry':'US'},'openingHoursSpecification':[{'@type':'OpeningHoursSpecification','dayOfWeek':['Monday','Tuesday','Wednesday','Thursday','Friday'],'opens':'08:00','closes':'17:00'}]}
     html=f'''<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{e(title)} | AAA RV Collision &amp; Service</title><meta name="description" content="{e(desc,quote=True)}"><meta name="robots" content="noindex, nofollow"><meta name="theme-color" content="#121313"><link rel="canonical" href="{url}"><meta property="og:title" content="{e(title,quote=True)} | AAA RV"><meta property="og:description" content="{e(desc,quote=True)}"><meta property="og:type" content="website"><meta property="og:url" content="{url}"><link rel="icon" type="image/svg+xml" href="{{{{R}}}}favicon.svg"><link rel="stylesheet" href="{{{{R}}}}assets/fonts.css"><link rel="stylesheet" href="{{{{R}}}}styles.css"><script src="{{{{R}}}}site.js" defer></script>{'<link rel="preload" href="'+r+'assets/homepage-header.webp" as="image" fetchpriority="high">' if preload else ''}<script type="application/ld+json">{json.dumps(structured)}</script></head><body>{header(active, show_policy=bool(slug) and slug!='request-service')}<main id="main">{body}</main>{footer()}</body></html>'''
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{e(title)} | AAA RV Collision &amp; Service</title><meta name="description" content="{e(desc,quote=True)}"><meta name="robots" content="noindex, nofollow"><meta name="theme-color" content="#121313"><link rel="canonical" href="{url}"><meta property="og:title" content="{e(title,quote=True)} | AAA RV"><meta property="og:description" content="{e(desc,quote=True)}"><meta property="og:type" content="website"><meta property="og:url" content="{url}"><link rel="icon" type="image/svg+xml" href="{{{{R}}}}favicon.svg"><link rel="stylesheet" href="{{{{R}}}}assets/fonts.css"><link rel="stylesheet" href="{{{{R}}}}styles.css?v={STYLE_VERSION}"><script src="{{{{R}}}}site.js" defer></script>{'<link rel="preload" href="'+r+'assets/homepage-header.webp" as="image" fetchpriority="high">' if preload else ''}<script type="application/ld+json">{json.dumps(structured)}</script></head><body>{header(active, show_policy=bool(slug) and slug!='request-service')}<main id="main">{body}</main>{footer()}</body></html>'''
     folder=ROOT/slug;folder.mkdir(exist_ok=True)
     (folder/'index.html').write_text(html.replace('{{R}}',r))
     PAGES.append(slug)
