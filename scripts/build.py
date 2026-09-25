@@ -78,7 +78,7 @@ CARD_PHOTOS = {
     'collision-repair': ('service-collision.webp', 'Rear fiberglass and body damage on a motorhome awaiting collision repair', 1200, 900),
     'paint-and-graphics': ('service-paint.webp', 'Motorhome masked and prepared for paint in the AAA RV spray booth', 900, 1200),
     'service-and-maintenance': ('service-maintenance.webp', 'Technician applying sealant during RV roof maintenance', 1200, 900),
-    'appliances-and-systems': ('service-appliances.webp', 'RV refrigerator, air conditioner, furnace, water heater, range, and ice maker', 1200, 900),
+    'appliances-and-systems': ('service-appliances.webp', 'RV refrigerator, rooftop air conditioner, washer, water heater, microwave, and portable ice maker', 1200, 900),
     'trailer-chassis': ('service-trailer-chassis.webp', 'Exposed trailer brakes and suspension during chassis service', 1200, 800),
 }
 
