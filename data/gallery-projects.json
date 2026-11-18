@@ -1,0 +1,21 @@
+{
+  "projects": [
+    {
+      "title": "Motorhome collision repair",
+      "before": {
+        "image": "collision-before.jpg",
+        "alt": "Impact damage to the side of a motorhome before collision repair",
+        "description": "The damaged sidewall before repair.",
+        "width": 339,
+        "height": 254
+      },
+      "after": {
+        "image": "collision-after.jpg",
+        "alt": "The same motorhome after its collision repairs",
+        "description": "The same motorhome after collision repairs.",
+        "width": 339,
+        "height": 254
+      }
+    }
+  ]
+}

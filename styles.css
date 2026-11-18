@@ -32,3 +32,41 @@ h1,h2,h3{overflow-wrap:break-word}@media(max-width:1000px){.js .header-inner nav
 
 /* Preserve the complete trailer brakes and suspension photograph. */
 .service-photo img.trailer-chassis-photo{height:auto;min-height:0;max-height:none;aspect-ratio:3/2;object-fit:contain}
+
+/* Featured repair and the expandable before/after photo carousel. */
+.gallery-feature{border:1px solid var(--line);background:var(--paper)}
+.gallery-feature>a{display:block}
+.gallery-feature img{width:100%;height:auto;aspect-ratio:1672/941;object-fit:contain}
+.gallery-feature figcaption{display:flex;justify-content:space-between;gap:18px;padding:20px 24px;font-size:.93rem}
+.gallery-feature figcaption span:first-child{font-weight:700}
+.gallery-feature figcaption span:last-child{color:var(--muted)}
+.repair-carousel{margin-block:68px;padding:38px;background:var(--ink);color:#fff;border-top:3px solid var(--gold)}
+.repair-carousel-heading{display:flex;justify-content:space-between;gap:24px;align-items:end;margin-bottom:30px}
+.repair-carousel-heading .eyebrow{color:var(--gold);margin-bottom:13px}
+.repair-carousel-heading h2{font-size:clamp(2.2rem,3.5vw,3.2rem)}
+.repair-carousel-heading>p{font-size:.95rem;color:#c9ceca;max-width:210px}
+.repair-carousel-body{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:36px;align-items:center}
+.repair-viewport{min-width:0;background:#232727;touch-action:pan-y pinch-zoom}
+.repair-track{min-width:0}
+.repair-slide{position:relative;margin:0;min-width:0}
+.repair-slide>a{display:block}
+.repair-slide img{width:100%;height:auto;aspect-ratio:339/254;object-fit:contain;user-select:none;-webkit-user-drag:none}
+.repair-phase{position:absolute;left:18px;bottom:18px;background:var(--ink);color:var(--gold-light);font-weight:700;font-size:.85rem;letter-spacing:.12em;text-transform:uppercase;padding:9px 16px;pointer-events:none}
+.repair-carousel.is-ready .repair-viewport{overflow:hidden}
+.repair-carousel.is-ready .repair-track{display:flex;transition:transform .45s ease}
+.repair-carousel.is-ready .repair-slide{flex:0 0 100%}
+.repair-copy .small-label{color:var(--gold);font-size:.75rem}
+.repair-copy h3{font-size:clamp(2rem,3vw,2.9rem);margin-block:15px 20px}
+.repair-description{font-size:1rem;color:#d4d8d4;min-height:3.3em}
+.repair-status{margin-top:22px;font-size:.88rem;color:var(--gold-light)}
+.repair-controls{margin-top:26px;border-top:1px solid #ffffff35;padding-top:24px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px}
+.repair-controls[hidden]{display:none}
+.repair-controls button{border:1px solid #979f94;background:transparent;color:white;min-height:46px;cursor:pointer;padding:10px 14px;font-size:.85rem;font-weight:600}
+.repair-controls button:hover{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+.repair-controls button:focus-visible{outline:3px solid var(--gold);outline-offset:4px}
+.repair-nav{display:flex;align-items:center;gap:16px}
+.repair-nav button{min-width:46px;font-size:1.25rem;line-height:1}
+.repair-nav span{font-size:.85rem;font-variant-numeric:tabular-nums;color:#d4d8d4}
+@media(max-width:900px){.repair-carousel{padding:28px}.repair-carousel-body{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:24px}.repair-carousel-heading>p{display:none}}
+@media(max-width:700px){.gallery-feature figcaption{display:block;padding:15px 18px;font-size:.84rem}.gallery-feature figcaption span{display:block}.repair-carousel{margin-block:42px;padding:22px 18px}.repair-carousel-body{grid-template-columns:1fr;gap:24px}.repair-carousel-heading{margin-bottom:23px}.repair-copy h3{font-size:2.2rem;margin-block:12px 15px}.repair-description{min-height:0}.repair-controls{margin-top:20px}.repair-phase{bottom:12px;left:12px;padding:7px 12px;font-size:.75rem}}
+@media(prefers-reduced-motion:reduce){.repair-carousel.is-ready .repair-track{transition:none}}

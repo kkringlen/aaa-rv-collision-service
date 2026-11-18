@@ -54,14 +54,18 @@ add_action('after_setup_theme', function () {
 add_action('wp_enqueue_scripts', function () {
     $uri = get_template_directory_uri();
     wp_enqueue_style('aaa-rv-fonts', $uri . '/assets/fonts.css', array(), '1.0.0');
-    wp_enqueue_style('aaa-rv-design', $uri . '/styles.css', array('aaa-rv-fonts'), '1.2.2');
-    wp_enqueue_script('aaa-rv-site', $uri . '/site.js', array(), '1.2.2', true);
+    wp_enqueue_style('aaa-rv-design', $uri . '/styles.css', array('aaa-rv-fonts'), '1.3.0');
+    wp_enqueue_script('aaa-rv-site', $uri . '/site.js', array(), '1.3.0', true);
 });
 
 add_shortcode('aaa_rv_service_grid', function ($attributes) {
     $attributes = shortcode_atts(array('view'=>'rv-services'), $attributes, 'aaa_rv_service_grid');
     $view = $attributes['view'] === 'home' ? 'home' : 'rv-services';
     return aaa_rv_resolve(file_get_contents(get_template_directory() . '/parts/service-grid-' . $view . '.html'));
+});
+
+add_shortcode('aaa_rv_gallery_showcase', function () {
+    return aaa_rv_resolve(file_get_contents(get_template_directory() . '/parts/gallery-showcase.html'));
 });
 
 add_shortcode('aaa_rv_work_request', function () {
@@ -323,6 +327,48 @@ function aaa_rv_update_trailer_photo() {
 }
 add_action('admin_init', 'aaa_rv_update_trailer_photo', 50);
 
+/** Swap only the old gallery comparison for the featured photo and rotation. */
+function aaa_rv_gallery_showcase_content($content) {
+    $shortcode = '[aaa_rv_gallery_showcase]';
+    if (strpos($content, $shortcode) !== false) { return $content; }
+    $pattern = '/<div\b[^>]*\bclass\s*=\s*([\x22\x27])[^\x22\x27]*\bcomparison\b[^\x22\x27]*\1[^>]*>/i';
+    if (preg_match_all($pattern, $content, $starts, PREG_OFFSET_CAPTURE) !== 1) { return false; }
+    $offset = $starts[0][0][1];
+    preg_match_all('/<\/?div\b[^>]*>/i', substr($content, $offset), $tags, PREG_OFFSET_CAPTURE);
+    $depth = 0;
+    foreach ($tags[0] as $tag) {
+        $depth += substr($tag[0], 0, 2) === '</' ? -1 : 1;
+        if ($depth === 0) {
+            $end = $offset + $tag[1] + strlen($tag[0]);
+            return substr($content, 0, $offset) . $shortcode . substr($content, $end);
+        }
+    }
+    return false;
+}
+
+function aaa_rv_update_gallery_showcase() {
+    if (get_option('aaa_rv_gallery_showcase_v130')) { return; }
+    if (!get_option('aaa_rv_redesign_import_v1') || !current_user_can('switch_themes') || !current_user_can('unfiltered_html')) { return; }
+    $page = get_page_by_path('gallery', OBJECT, 'page');
+    $content = $page && get_post_meta($page->ID, '_aaa_rv_redesigned', true) === '1' ? aaa_rv_gallery_showcase_content($page->post_content) : false;
+    if ($content === false) {
+        update_option('aaa_rv_gallery_showcase_error', 'The gallery comparison needs manual review. Existing page content has been retained.', false);
+        return;
+    }
+    if ($content !== $page->post_content) {
+        add_post_meta($page->ID, '_aaa_rv_before_gallery_v130', $page->post_content, true);
+        wp_save_post_revision($page->ID);
+        $result = wp_update_post(wp_slash(array('ID'=>$page->ID, 'post_content'=>$content)), true);
+        if (is_wp_error($result)) {
+            update_option('aaa_rv_gallery_showcase_error', $result->get_error_message(), false);
+            return;
+        }
+    }
+    update_option('aaa_rv_gallery_showcase_v130', current_time('mysql'), false);
+    delete_option('aaa_rv_gallery_showcase_error');
+}
+add_action('admin_init', 'aaa_rv_update_gallery_showcase', 60);
+
 add_action('admin_notices', function () {
     $error = get_option('aaa_rv_redesign_import_error');
     if ($error && current_user_can('switch_themes')) {
@@ -335,6 +381,10 @@ add_action('admin_notices', function () {
     $trailer_error = get_option('aaa_rv_trailer_photo_error');
     if ($trailer_error && current_user_can('switch_themes')) {
         echo '<div class="notice notice-error"><p>AAA RV photo update: ' . esc_html($trailer_error) . '</p></div>';
+    }
+    $gallery_error = get_option('aaa_rv_gallery_showcase_error');
+    if ($gallery_error && current_user_can('switch_themes')) {
+        echo '<div class="notice notice-error"><p>AAA RV gallery update: ' . esc_html($gallery_error) . '</p></div>';
     }
 });
 

@@ -41,3 +41,13 @@ The update preserves the current collision-page content except for its hero imag
 Replaces the `/trailer-chassis/` title illustration with the same owner-supplied photo used for its category card (`assets/service-trailer-chassis.webp`). The attachment was confirmed identical to the previously supplied original. No generative edits were applied. The hero retains the full photograph at its native 3:2 proportion across screen sizes.
 
 The one-time update replaces only that visual, preserves the rest of the page, and stores the prior content in `_aaa_rv_before_trailer_photo_v122` and a WordPress revision. It retains the earlier photo updates and does not re-import other page content.
+
+## Version 1.3.0 — Featured Tiffin repair and rotating gallery
+
+The Gallery's “Before & after” section now features the owner-supplied Tiffin composite image. It links to the original, unedited upload. The former motorhome comparison photographs move into a separate rotating section immediately below the feature and above the Paint Preparation / Graphics Restoration gallery.
+
+The rotation starts with the previous repair's Before and After photos, six seconds per photo, and loops. Visitors can pause/play, go back/forward, use left/right arrow keys, or swipe. Hover pauses movement; keyboard focus and manual navigation stop it until Play is selected. Reduced-motion preferences disable autoplay, and hidden or offscreen galleries do not advance. Without JavaScript, both repair photographs remain visible.
+
+To add repair pairs later, append projects to `data/gallery-projects.json` with a title and `before` / `after` image, alt text, description, width, and height. Put the files in `assets`, then run both build scripts. The number of slides and controls adjust automatically. Keep `[aaa_rv_gallery_showcase]` in the WordPress page editor; its markup is generated from `scripts/gallery.py` and `parts/gallery-showcase.html` so the visual editor cannot break the slider structure.
+
+The administrator-only, one-time upgrade replaces only the old comparison block. It keeps the page heading, introductory copy, lower gallery, page ID, other pages, and owner edits. The original content is retained in `_aaa_rv_before_gallery_v130` and a WordPress revision. Unexpected markup is retained for manual review. Existing updates from earlier versions are included.

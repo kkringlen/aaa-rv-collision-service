@@ -28,6 +28,13 @@ for path in sources:
     raw = path.read_text()
     body = portable(re.search(r'<main id="main">(.*?)</main>', raw, re.S).group(1))
     body = re.sub(r'<iframe id="shopmonkey-work-request".*?</iframe>', '[aaa_rv_work_request]', body, flags=re.S)
+    if key == 'gallery':
+        pattern = r'<!-- aaa-gallery-showcase:start -->(.*?)<!-- aaa-gallery-showcase:end -->'
+        showcase = re.search(pattern, body, re.S)
+        if not showcase:
+            raise ValueError('Gallery showcase is missing from the generated page')
+        (THEME/'parts/gallery-showcase.html').write_text(showcase.group(1).strip())
+        body = re.sub(pattern, '[aaa_rv_gallery_showcase]', body, count=1, flags=re.S)
     if key in ('home', 'rv-services'):
         # Keep the complete cards out of the visual editor, which splits block-level links.
         start = body.index('<div class="service-grid">')
